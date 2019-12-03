@@ -4,11 +4,11 @@
 <h2 id="0x00-shadowsocks"><a href="#0x00-shadowsocks" class="headerlink" title="0x00 shadowsocks"></a>0x00 shadowsocks</h2><p>由于众所周知的原因，我们无法正常访问互联网，对一些职业比如程序员的工作造成了极大的障碍，所以学会科学上网是必须的。具体的方法<a href="https://github.com/haoel/haoel.github.io" target="_blank" rel="noopener">比较多</a>, 个人一直使用shadowsocks(以下简称ss). <code>ss</code>上网原理如下图所示:</p>
 <p><img src="/images/shadowsocks.png" alt="ss"></p>
 <p>可见, <code>ss</code>分为服务器和客户端两部分，为了能科学上网，需要先在远端部署代理服务器，然后在本地启动代理客户端，由客户端代理访问外网的流量。</p>
-<h2 id="0x01-服务器"><a href="#0x01-服务器" class="headerlink" title="0x01 服务器"></a>0x01 服务器</h2><p>个人在<a href="https://my.vultr.com/" target="_blank" rel="noopener">vultr</a>上搭建了个人的<code>ss服务器</code>.</p>
-<h2 id="0x02-客户端"><a href="#0x02-客户端" class="headerlink" title="0x02 客户端"></a>0x02 客户端</h2><p>window和MacOS版本都比较好用，ubuntu下个人一直没找到比较好用的客户端。之前一直用<a href="https://github.com/shadowsocks/shadowsocks-qt5/releases" target="_blank" rel="noopener">shadowsocks-qt5</a>,下载之后双击即可启动。但是无法(没找到方法)开机启动，每次系统重启都要手动开客户端，比较麻烦。今天在<a href="https://linux-network-programming.readthedocs.io/zh_CN/latest/services/shadowsocks.html#ss-local" target="_blank" rel="noopener">这个网站</a>上看到<code>ubuntu</code>下可以直接用<code>apt</code>安装<code>shadowsocks-libev</code>,决定试一下。</p>
+<h2 id="0x01-服务器"><a href="#0x01-服务器" class="headerlink" title="0x01 服务器"></a>0x01 服务器</h2><p>个人在<a href="https://my.vultr.com/" target="_blank" rel="noopener">vultr</a>上搭建了<code>ss服务器</code>.</p>
+<h2 id="0x02-客户端"><a href="#0x02-客户端" class="headerlink" title="0x02 客户端"></a>0x02 客户端</h2><p>window和MacOS版本都比较好用，ubuntu下一直没找到比较好用的客户端。之前一直用<a href="https://github.com/shadowsocks/shadowsocks-qt5/releases" target="_blank" rel="noopener">shadowsocks-qt5</a>,下载之后双击即可启动。但是无法(没找到方法)开机启动，每次系统重启都要手动开客户端，比较麻烦。今天在<a href="https://linux-network-programming.readthedocs.io/zh_CN/latest/services/shadowsocks.html#ss-local" target="_blank" rel="noopener">这个网站</a>上看到<code>ubuntu</code>下可以直接用<code>apt</code>安装<code>shadowsocks-libev</code>,决定试一下。</p>
 <h3 id="安装shadowsocks-libev"><a href="#安装shadowsocks-libev" class="headerlink" title="安装shadowsocks-libev"></a>安装shadowsocks-libev</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install shadowsocks-libev</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>Note: 个人目前不太清楚shadowsocks与shadowsocks-libev的区别，有空再看吧。</p>
+<p>Note:<br>目前不太清楚shadowsocks与shadowsocks-libev的区别，有空再看吧。</p>
 </blockquote>
 <h3 id="systemd"><a href="#systemd" class="headerlink" title="systemd"></a>systemd</h3><p><code>systemd</code>的设计目标是，为系统的启动和管理提供一套完整的解决方案。主要用来管理守护进程.<br>关于<code>systemd</code>,可以看一下耗子叔写的这篇<a href="https://coolshell.cn/articles/17998.html" target="_blank" rel="noopener">LINUX PID 1 和 SYSTEMD</a>以及阮一峰老师写的<a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">Systemd 入门教程</a>.如有兴趣，可以继续深入探索。</p>
 <p>使用<code>apt</code>安装之后，<code>shadowsock-libev</code>被<code>systemd</code>自动接管.</p>
@@ -42,8 +42,15 @@
 <p>修改为</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/ss-local -c $CONFFILE $DAEMON_ARGS</span><br></pre></td></tr></table></figure>
 
-<p>这样应该就可以了吧？not really！</p>
-<h3 id="start-stop-daemon"><a href="#start-stop-daemon" class="headerlink" title="start-stop-daemon"></a>start-stop-daemon</h3><p><code>[service]</code>下有一行是<code>EnvironmentFile=/etc/default/shadowsocks-libev</code>，打开这个文件，我们看到：</p>
+<p>这样应该就可以了吧？<del>not really！</del></p>
+<p>是的。</p>
+<hr>
+<p>作废分割线</p>
+<p><del>### start-stop-daemon</del> </p>
+<blockquote>
+<p>经过进一步调查研究，<code>systemd</code>管理守护进程与<code>/etc/init.d/shadowsocks-libev</code> 没有直接关系，本节作废。</p>
+</blockquote>
+<p><code>[service]</code>下有一行是<code>EnvironmentFile=/etc/default/shadowsocks-libev</code>，打开这个文件，我们看到：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># Defaults for shadowsocks initscript</span><br><span class="line"># sourced by /etc/init.d/shadowsocks-libev</span><br><span class="line"># installed at /etc/default/shadowsocks-libev by the maintainer scripts</span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># This is a POSIX shell fragment</span><br><span class="line">#</span><br><span class="line"># Note: `START&apos;, `GROUP&apos; and `MAXFD&apos; options are not recognized by systemd.</span><br><span class="line"># Please change those settings in the corresponding systemd unit file.</span><br><span class="line"></span><br><span class="line"># Enable during startup?</span><br><span class="line">START=yes</span><br><span class="line"></span><br><span class="line"># Configuration file</span><br><span class="line">CONFFILE=&quot;/etc/shadowsocks-libev/config.json&quot;</span><br><span class="line"></span><br><span class="line"># Extra command line arguments</span><br><span class="line">DAEMON_ARGS=&quot;-u&quot;</span><br><span class="line"></span><br><span class="line"># User and group to run the server as</span><br><span class="line">USER=nobody</span><br><span class="line">GROUP=nogroup</span><br><span class="line"></span><br><span class="line"># Number of maximum file descriptors</span><br><span class="line">MAXFD=32768</span><br></pre></td></tr></table></figure>
 
 <p>注意，这里注释中有一句：</p>
@@ -55,16 +62,18 @@
 <p>可见这个脚本中可执行程序还是配置为了<code>/usr/bin/ss-server</code>, 将其改为<code>ss-local</code>:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DAEMON=/usr/bin/ss-local    # Introduce the server&apos;s location here</span><br></pre></td></tr></table></figure>
 
-<p>仔细阅读<code>/etc/init.d/shadowsocks-libev</code>，发现实际上启动<code>shadowsocks-libev</code>守护进程的是<code>case</code>中的<code>start)</code>:</p>
+<p>仔细阅读<code>/etc/init.d/shadowsocks-libev</code>，发现实际上启动<code>shadowsocks-libev</code>守护进程的是<code>case</code>中的<code>start)</code>中的<code>do_start</code>函数:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">case &quot;$1&quot; in</span><br><span class="line">    start)</span><br><span class="line">        [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_daemon_msg &quot;Starting $DESC &quot; &quot;$NAME&quot;</span><br><span class="line">        do_start</span><br><span class="line">        case &quot;$?&quot; in</span><br><span class="line">            0|1) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 0 ;;</span><br><span class="line">        2) [ &quot;$VERBOSE&quot; != no ] &amp;&amp; log_end_msg 1 ;;</span><br><span class="line">    esac</span><br><span class="line">    ;;</span><br></pre></td></tr></table></figure>
 
 <p><code>do_start</code>函数如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">do_start()</span><br><span class="line">&#123;</span><br><span class="line">    # Modify the file descriptor limit</span><br><span class="line">    ulimit -n $&#123;MAXFD&#125;</span><br><span class="line"></span><br><span class="line">    # Take care of pidfile permissions</span><br><span class="line">    mkdir /var/run/$NAME 2&gt;/dev/null || true</span><br><span class="line">    chown &quot;$USER:$GROUP&quot; /var/run/$NAME</span><br><span class="line"></span><br><span class="line">    # Return</span><br><span class="line">    #   0 if daemon has been started</span><br><span class="line">    #   1 if daemon was already running</span><br><span class="line">    #   2 if daemon could not be started</span><br><span class="line">    start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER:$GROUP --exec $DAEMON --test &gt; /dev/null \</span><br><span class="line">        || return 1</span><br><span class="line">    start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER:$GROUP --exec $DAEMON -- \</span><br><span class="line">        -c &quot;$CONFFILE&quot; -u -f $PIDFILE $DAEMON_ARGS \</span><br><span class="line">        || return 2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可见，<code>do_start</code>中实际干活的是<code>start-stop-daemon</code>命令。</p>
-<p><a href="http://man7.org/linux/man-pages/man8/start-stop-daemon.8.html" target="_blank" rel="noopener">start-stop-daemon</a> 为系统自带函数，可以将普通程序以<code>[守护进程](https://en.wikipedia.org/wiki/Daemon_(computing)</code>方式运行.</p>
+<p>可得出来，<code>do_start</code>中实际干活的是<code>start-stop-daemon</code>命令。</p>
+<p><a href="http://man7.org/linux/man-pages/man8/start-stop-daemon.8.html" target="_blank" rel="noopener">start-stop-daemon</a> 为系统自带函数，可以将普通程序以<a href="https://en.wikipedia.org/wiki/Daemon" target="_blank" rel="noopener">守护进程</a> 方式运行.</p>
 <blockquote>
-<p>看了下个人<code>/etc/init.d</code>目录，发现<code>redis, docker, mysql</code>等知名软件都是用<code>start-stop-daemon</code>命令启动。</p>
+<p>看了下自己的<code>/etc/init.d</code>目录，发现<code>redis, docker, mysql</code>等知名软件都是用<code>start-stop-daemon</code>命令启动管理的。</p>
 </blockquote>
+<p>作废分割线</p>
+<hr>
 <h3 id="启动shadowsocks-libev-service"><a href="#启动shadowsocks-libev-service" class="headerlink" title="启动shadowsocks-libev.service"></a>启动shadowsocks-libev.service</h3><p>到这里，将<code>shadowsocks-libev</code>中可执行目标程序的<code>/usr/bin/ss-server</code>换成<code>/usr/bin/ss-local</code>的目标就完成了。执行<code>start</code>：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start shadowsocks-libev</span><br></pre></td></tr></table></figure>
 <p>查看服务状态</p>
@@ -73,15 +82,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">● shadowsocks-libev.service - Shadowsocks-libev Default local  Service</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/shadowsocks-libev.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Mon 2019-12-02 16:03:52 CST; 5h 6min ago</span><br><span class="line">     Docs: man:shadowsocks-libev(8)</span><br><span class="line"> Main PID: 31885 (ss-local)</span><br><span class="line">    Tasks: 1 (limit: 4915)</span><br><span class="line">   CGroup: /system.slice/shadowsocks-libev.service</span><br><span class="line">           └─31885 /usr/bin/ss-local -c /etc/shadowsocks-libev/config.json -u</span><br><span class="line"></span><br><span class="line">12月 02 16:03:52 lfn-Lenovo systemd[1]: Started Shadowsocks-libev Default Server Service.</span><br></pre></td></tr></table></figure>
 
 <p><code>Active</code>为绿色，值为<code>active (running)</code><br>访问谷歌测试，一切ok.</p>
-<h2 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>总的来说，修改以下两个地方，便可以直接用<code>shadowsocks-libev.service</code>启动<code>ss-local</code>:</p>
-<ul>
-<li><code>/etc/init.d/shadowsocks-libev</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">DAEMON=/usr/bin/ss-server    # Introduce the server&apos;s location here</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>/lib/systemd/system/shadowsocks-libev.service</code></li>
-</ul>
+<h2 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>总的来说，修改<br><code>/lib/systemd/system/shadowsocks-libev.service</code><br>文件中下处内容即可直接用<code>shadowsocks-libev.service</code>启动<code>ss-local</code>:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/ss-server -c $CONFFILE $DAEMON_ARGS</span><br></pre></td></tr></table></figure>
 
 <p>可能在ubuntu下运行客户端存在更简单直接的方法，如果您知道，请不吝告知，谢谢～～</p>
