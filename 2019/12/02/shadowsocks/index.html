@@ -49,8 +49,26 @@
 <h2 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>其实很简答，修改<br><code>/lib/systemd/system/shadowsocks-libev-local@.service</code> 中部分内容即可。</p>
 <p>通过本次折腾：</p>
 <ul>
-<li>了解了<code>systemd</code>下<code>systemdctl</code>和<code>journalctl</code>部分命令的用法；</li>
-<li>验证了<code>/etc/init.d/</code>下的文件与<code>systemd</code>系统无关。</li>
+<li><p>了解了<code>systemd</code>下<code>systemdctl</code>和<code>journalctl</code>部分命令的用法；</p>
+</li>
+<li><p>验证了<code>/etc/init.d/</code>下的文件与<code>systemd</code>系统无关。</p>
+</li>
+</ul>
+<h2 id="0x04-参考文章"><a href="#0x04-参考文章" class="headerlink" title="0x04 参考文章"></a>0x04 参考文章</h2><ul>
+<li><p><a href="https://wiki.archlinux.org/index.php/Systemd_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)" target="_blank" rel="noopener">ArchLinux - systemd (简体中文)
+</a></p>
+</li>
+<li><p><a href="https://coolshell.cn/articles/17998.html" target="_blank" rel="noopener">LINUX PID 1 和 SYSTEMD
+</a></p>
+</li>
+<li><p><a href="http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html" target="_blank" rel="noopener">Systemd 入门教程：命令篇</a></p>
+</li>
+<li><p><a href="http://dsh.li/blog/14599564487698.html" target="_blank" rel="noopener">start-stop-daemon 将程序作为守护进程启动
+</a></p>
+</li>
+<li><p><a href="http://blog.qiusuo.im/blog/2014/03/15/start-stop-daemon-usage/" target="_blank" rel="noopener">用start-stop-daemon将程序变为守护进程
+</a></p>
+</li>
 </ul>
 <blockquote>
 <p>全文完。</p>
