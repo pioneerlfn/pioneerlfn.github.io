@@ -24,6 +24,35 @@
 <p>没想到报了以下错误:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Failed to get properties: Unit name shadowsocks-libev-local@.service is neither a valid invocation ID nor unit name.</span><br></pre></td></tr></table></figure>
 
+<hr>
+<p><code>2019-12-03 update</code></p>
+<p>打开<code>/lib/systemd/system/shadowsocks-libev-local@.service</code>, 加入<code>user</code>, <code>group</code>，修改<code>ExecStart</code>为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/ss-local -c /etc/shadowsocks-libev/config.json</span><br></pre></td></tr></table></figure>
+<p>重载service配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+
+<p>启动<code>ss-local</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start shadowsocks-libev-local@service</span><br></pre></td></tr></table></figure>
+
+<p>查看<code>shadowsocks-libev-local</code>状态:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status shadowsocks-libev-local@service</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">● shadowsocks-libev-local@service.service - Shadowsocks-Libev Custom Client Service for service</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/shadowsocks-libev-local@.service; disabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Tue 2019-12-03 14:27:34 CST; 25min ago</span><br><span class="line">     Docs: man:ss-local(1)</span><br><span class="line"> Main PID: 13981 (ss-local)</span><br><span class="line">    Tasks: 1 (limit: 4915)</span><br><span class="line">   CGroup: /system.slice/system-shadowsocks\x2dlibev\x2dlocal.slice/shadowsocks-libev-local@service.service</span><br><span class="line">           └─13981 /usr/bin/ss-local -c /etc/shadowsocks-libev/config.json</span><br><span class="line"></span><br><span class="line">12月 03 14:27:34 lfn-Lenovo systemd[1]: Started Shadowsocks-Libev Custom Client Service for service</span><br></pre></td></tr></table></figure>
+
+<p>颜色为绿，<code>Active</code>为<code>active(running)</code>，说明应该没问题了。</p>
+<p>登录谷歌验证。</p>
+<h2 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>其实很简答，修改<br><code>/lib/systemd/system/shadowsocks-libev-local@.service</code> 中部分内容即可。</p>
+<p>通过本次折腾：</p>
+<ul>
+<li>了解了<code>systemd</code>下<code>systemdctl</code>和<code>journalctl</code>部分命令的用法；</li>
+<li>验证了<code>/etc/init.d/</code>下的文件与<code>systemd</code>系统无关。</li>
+</ul>
+<blockquote>
+<p>全文完。</p>
+</blockquote>
+<hr>
+<p>=====以下内容无效==========</p>
 <p>不太知道怎么回事，试一下<code>shadowsocks-libev.service</code>, 执行命令：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start shadowsocks-libev.service</span><br></pre></td></tr></table></figure>
 
@@ -82,7 +111,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">● shadowsocks-libev.service - Shadowsocks-libev Default local  Service</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/shadowsocks-libev.service; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (running) since Mon 2019-12-02 16:03:52 CST; 5h 6min ago</span><br><span class="line">     Docs: man:shadowsocks-libev(8)</span><br><span class="line"> Main PID: 31885 (ss-local)</span><br><span class="line">    Tasks: 1 (limit: 4915)</span><br><span class="line">   CGroup: /system.slice/shadowsocks-libev.service</span><br><span class="line">           └─31885 /usr/bin/ss-local -c /etc/shadowsocks-libev/config.json -u</span><br><span class="line"></span><br><span class="line">12月 02 16:03:52 lfn-Lenovo systemd[1]: Started Shadowsocks-libev Default Server Service.</span><br></pre></td></tr></table></figure>
 
 <p><code>Active</code>为绿色，值为<code>active (running)</code><br>访问谷歌测试，一切ok.</p>
-<h2 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>总的来说，修改<br><code>/lib/systemd/system/shadowsocks-libev.service</code><br>文件中下处内容即可直接用<code>shadowsocks-libev.service</code>启动<code>ss-local</code>:</p>
+<h2 id="0x03-小结-1"><a href="#0x03-小结-1" class="headerlink" title="0x03 小结"></a>0x03 小结</h2><p>本文记录了用<code>systemd</code>管理<code>shadowsocks-libev</code>客户端时遇到的一些问题和解决办法。<br>总的来说，修改<br><code>/lib/systemd/system/shadowsocks-libev.service</code><br>文件中下处内容即可直接用<code>shadowsocks-libev.service</code>启动<code>ss-local</code>:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/ss-server -c $CONFFILE $DAEMON_ARGS</span><br></pre></td></tr></table></figure>
 
 <p>可能在ubuntu下运行客户端存在更简单直接的方法，如果您知道，请不吝告知，谢谢～～</p>
