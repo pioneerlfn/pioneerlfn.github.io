@@ -45,7 +45,7 @@
 <p>这样应该就可以了吧？<del>not really！</del></p>
 <p>是的。</p>
 <hr>
-<p>作废分割线</p>
+<p>=========作废分割线================</p>
 <p><del>### start-stop-daemon</del> </p>
 <blockquote>
 <p>经过进一步调查研究，<code>systemd</code>管理守护进程与<code>/etc/init.d/shadowsocks-libev</code> 没有直接关系，本节作废。</p>
@@ -72,7 +72,7 @@
 <blockquote>
 <p>看了下自己的<code>/etc/init.d</code>目录，发现<code>redis, docker, mysql</code>等知名软件都是用<code>start-stop-daemon</code>命令启动管理的。</p>
 </blockquote>
-<p>作废分割线</p>
+<p>========作废分割线=============</p>
 <hr>
 <h3 id="启动shadowsocks-libev-service"><a href="#启动shadowsocks-libev-service" class="headerlink" title="启动shadowsocks-libev.service"></a>启动shadowsocks-libev.service</h3><p>到这里，将<code>shadowsocks-libev</code>中可执行目标程序的<code>/usr/bin/ss-server</code>换成<code>/usr/bin/ss-local</code>的目标就完成了。执行<code>start</code>：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start shadowsocks-libev</span><br></pre></td></tr></table></figure>
