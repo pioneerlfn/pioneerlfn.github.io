@@ -12,7 +12,7 @@
 <li>Locks</li>
 <li>Once</li>
 </ul>
-<p>没有提到<code>atomic</code>。但其实<code>atomic</code>也是能保证<code>可观测性的</code>,而且上面这几种手段也往往需要依赖<code>atomic</code>. <code>atomic</code>的代码，编译后的cpu指令具有<code>LOCK</code>前缀(x86), 说明是锁总线的，是Go里<a href="https://github.com/cch123/golang-notes/blob/master/memory_barrier.md" target="_blank" rel="noopener">最强的内存模型</a></p>
+<p>没有提到<code>atomic</code>。但其实<code>atomic</code>也是能保证<code>可观测性的</code>,而且上面这几种手段也往往需要依赖<code>atomic</code>. <code>atomic</code>的代码，编译后的cpu指令具有<code>LOCK</code>前缀(x86), 说明是锁<code>cacheline</code>的，是Go里<a href="https://github.com/cch123/golang-notes/blob/master/memory_barrier.md" target="_blank" rel="noopener">最强的内存模型</a></p>
 <h2 id="0x03-Lock与Unlock的happens-before"><a href="#0x03-Lock与Unlock的happens-before" class="headerlink" title="0x03 Lock与Unlock的happens-before"></a>0x03 Lock与Unlock的happens-before</h2><p>根据Go语言规范, <code>Unlock()</code>返回<code>happens-before</code> <code>Lock()</code>返回.<br>我们可以设想有<code>A</code>和<code>B</code>两个gorotine同时执行<code>Do</code>, 在<code>位置1</code>处检测的时候条件都为真，二者都进入<code>doSlow</code>.不过两者总有一个先那到锁，我门假设是<code>A</code>， 那么<code>B</code>此时便阻塞在<code>位置2</code>(<code>Lock</code>)这个地方了.</p>
 <p>等<code>A</code>执行完<code>f</code>之后，调用<code>defer Unlock</code>, 因为<code>Unlock happens-before Lock</code>, 所以<code>位置4</code>这个地方的写操作，当<code>goroutine B</code> 从<code>Lock</code>返回，执行到<code>位置3</code>的时候y一定可以观测到<code>goroutine A</code>之前在<code>位置4</code>的写操作，即使<code>位置4</code>不是<code>atomic</code>也可以。</p>
 <p>可见，由于<code>Lock</code>提供的<code>happens-before</code>语义保证，<code>位置3</code>这个地方的读操作是不需要用到<code>atomic</code>。</p>
